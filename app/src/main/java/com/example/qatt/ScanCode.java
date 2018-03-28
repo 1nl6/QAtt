@@ -70,9 +70,11 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
 
     @Override
     public void handleResult(Result result) {
-        //Build alert window to display results
+        String scanResult = result.getText();
+        String[] lines = scanResult.split("\t");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("ScanCode Result");
+        builder.setTitle("Scan Result");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -80,12 +82,8 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             }
         });
 
-        //Get scan results
-        String scanResult = result.getText();
-        String[] lines = scanResult.split(System.getProperty("line.separator"));
-
-        //Check QR code
-        if(lines.length != 5 || !lines[0].equals("Psyc100")){
+        //Check QR code (last field is empty)
+        if(lines.length != 6){
             builder.setMessage("Invalid scan");
         } else{
             String name = lines[1];
@@ -97,17 +95,20 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE");
             Date d = new Date();
             String scanDay = weekDayFormat.format(d);
+            //Current time in 24 hour format
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+            String scanTime = timeFormat.format(d);
+
+            //Check day of scan
             if(!scanDay.equals(weekday)){
+                saveScan(netID,0,scanTime,scanDay,week);
                 builder.setMessage("Saved. Note: " + name + " usual lab is on " + weekday);
                 AlertDialog alert = builder.create();
                 alert.show();
                 return;
             }
 
-            //Current time in 24 hour format
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            String scanTime = timeFormat.format(d);
-
+            //Check time of scan
             int status = checkTime(labTime, scanTime);
             String message;
             switch (status) {
@@ -120,8 +121,8 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                     message = "Saved. " + name + " scanned for week " + week + " " + weekday + " " + labTime + " at " + scanTime;
                     break;
                 case 2:
-                    saveScan(netID,status,scanTime,scanDay,week);
-                    message = "Saved but absent. " + name + " usual lab time is " + labTime + ". If attending with permission, please note down the name.";
+                    saveScan(netID,0,scanTime,scanDay,week);
+                    message = "Saved but absent. " + name + " usual lab time is " + labTime + ". If attending with permission, please note down the student's name.";
                     break;
                 default:
                     message = "Invalid scan!";
@@ -137,6 +138,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
         //Show alert
         AlertDialog alert = builder.create();
         alert.show();
+
 
     }
 
@@ -161,12 +163,16 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             cal.add(Calendar.MINUTE, 32);
             Date labLate = cal.getTime();
 
-            if(scan.after(labEarly) && scan.before(labLate)){
-                return 1; //Good
-            } else if(scan.before(labEarly)){
-                return 2; //Early, not saved
-            } else{
+            //Time of end of lab
+            cal.add(Calendar.MINUTE, 30);
+            Date endLab = cal.getTime();
+
+            if(scan.after(labLate) && scan.before(endLab)){
                 return 0; //Late, saved but absent
+            } else if(scan.after(labEarly) && scan.before(labLate)){
+                return 1; //Good
+            } else {
+                return 3; //Attending different lab
             }
         } catch (ParseException e){
             return -1;

@@ -38,4 +38,6 @@ public class ScanRepository {
     private static ScanDao getScanDao(Context c){
         return ((DaoApplication) c.getApplicationContext()).getDaoSession().getScanDao();
     }
+
+    //
 }
