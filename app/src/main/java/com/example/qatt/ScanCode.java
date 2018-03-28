@@ -140,23 +140,6 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
 
     }
 
-    /*
-    //Check if student exist in database (create new student if not) - return student
-    public Student findStudent(String netID, String name){
-        Student student = StudentRepository.getStudent(this, netID);
-        if(student instanceof Student){
-            return student;
-        }
-        //Insert student into database
-        student = new Student();
-        student.setNetID(netID);
-        student.setName(name);
-        StudentRepository.insertOrUpdate(this, student);
-
-        return student;
-
-    }
-    */
 
     //Check time of scan
     public int checkTime(String labTime, String scanTime){
