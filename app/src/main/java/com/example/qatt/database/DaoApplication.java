@@ -20,6 +20,7 @@ public class DaoApplication extends Application {
         DaoMaster daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();
 
+        daoMaster.dropAllTables(db,true);
         daoMaster.createAllTables(db, true);
     }
 

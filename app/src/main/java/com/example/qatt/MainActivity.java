@@ -1,5 +1,6 @@
 package com.example.qatt;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -111,115 +112,33 @@ public class MainActivity extends AppCompatActivity{
 
 
     public void scan(View view){
-        Intent intent = new Intent(this, ScanCode.class);
-        intent.putExtra("week", week);
-        startActivity(intent);
+        confirmWeek(this);
     }
 
     public void exportDB(View view){
-        /*
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"1nl6@queesu.ca"});
-        i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
-        i.putExtra(Intent.EXTRA_TEXT   , "body of email");
-        try {
-            startActivity(Intent.createChooser(i, "Send mail..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-        }
-        */
-
-        /*
-        File file = new File(Environment.getDataDirectory(), "data.csv");
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"nikilin1993@gmail.com"});
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Backup");
-        intent.putExtra(Intent.EXTRA_TEXT, "Fail");
-        intent.setType("application/octet-stream");
-        //intent.putExtra(Intent.EXTRA_STREAM, file.toURI());
-        File root = Environment.getExternalStorageDirectory();
-        String fileName = "attendance-db";
-        if (root.canWrite()) {
-            File attachment = new File(root, fileName);
-            intent.putExtra(Intent.EXTRA_TEXT, "Success");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(attachment));
-        }
-
-        startActivity(Intent.createChooser(intent, "Send Email"));
-        */
-
-        /*
-        //Write to csv - external storage
-        String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state)){
-            File root = Environment.getExternalStorageDirectory();
-            File dir = new File(root.getAbsolutePath() + "/QAtt_attendance");
-            if(!dir.exists()){
-                dir.mkdir();
-            }
-            File file = new File(dir, "data.csv");
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    Log.e("Child", e.getMessage(), e);
-                }
-            }
-
-            try{
-                CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
-
-                List<Scan> scanRecords= ScanRepository.getAllScans(this);
-
-                //Write header
-                String[] header = {"NetID", "Attendance", "Time of Scan", "Day of Week", "Week"};
-                csvWrite.writeNext(header, false);
-                for(int i = 0; i < scanRecords.size(); i++){
-                    Scan record = scanRecords.get(i);
-                    String res[] = {record.getNetID(), String.valueOf(record.getAttendance()), String.valueOf(record.getScanTime()), record.getScanDate(), String.valueOf(record.getWeek())};
-                    csvWrite.writeNext(res, false);
-                }
-                csvWrite.close();
-            }catch(IOException e){
-                Log.e("Child", e.getMessage(), e);
-            }
-
-            /*
-            //Send email
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"1nl6@queensu.ca"});
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Backup");
-            intent.putExtra(Intent.EXTRA_TEXT, "Fail");
-
-            intent.setType("application/octet-stream");
-            if (!file.exists() || !file.canRead()) {
-                Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
-            }
-            Uri uri = Uri.parse("content://" + file);
-            //Uri uri = Uri.fromFile(file);
-            intent.putExtra(Intent.EXTRA_STREAM, uri);
-            */
-        /*
-        File root = Environment.getExternalStorageDirectory();
-        String fileName = "attendance-db";
-        if (root.canWrite()) {
-            File attachment = new File(root, fileName);
-            intent.putExtra(Intent.EXTRA_TEXT, "Success");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(attachment));
-        }
-        */
-            //startActivity(Intent.createChooser(intent, "Send Email"));
-
-        /*
-        }else{
-            Toast.makeText(this, "No external storage", Toast.LENGTH_SHORT).show();
-        }
-        */
         Intent intent = new Intent(this, ExportAttendance.class);
         startActivity(intent);
+    }
 
+    public void confirmWeek(Context c){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Intent intent = new Intent(MainActivity.this, ScanCode.class);
+                        intent.putExtra("week", week);
+                        startActivity(intent);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        builder.setMessage("You are scanning for week "+ week).setPositiveButton("Ok", dialogClickListener)
+                .setNegativeButton("Cancel", dialogClickListener).show();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.qatt;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.qatt.database.ScanRepository;
 import com.google.zxing.Result;
@@ -70,26 +72,18 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
 
     @Override
     public void handleResult(Result result) {
+
         String scanResult = result.getText();
         String[] lines = scanResult.split("\t");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Scan Result");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                scannerView.resumeCameraPreview(ScanCode.this);
-            }
-        });
-
         //Check QR code (last field is empty)
-        if(lines.length != 6){
-            builder.setMessage("Invalid scan");
+        if(lines.length != 7){
+            showAlert(this, "Unable to scan. \nPlease record student's name.");
         } else{
-            String name = lines[1];
+            String name = lines[0] + " " + lines[1];
             String netID = lines[2];
-            String weekday = lines[3];
-            String labTime = lines[4];
+            String weekday = lines[4];
+            String labTime = lines[5];
 
             //Check if date and time is valid
             SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE");
@@ -99,13 +93,19 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
             String scanTime = timeFormat.format(d);
 
-            //Check day of scan
+            //Check if student has already been scanned
+            if(ScanRepository.studentScanned(this,netID,week)){
+                showAlert(this, name + " has already been scanned for this week.");
+                return;
+
+            }
+
+            //Student scanned for different day
             if(!scanDay.equals(weekday)){
                 saveScan(netID,0,scanTime,scanDay,week);
-                builder.setMessage("Saved. Note: " + name + " usual lab is on " + weekday);
-                AlertDialog alert = builder.create();
-                alert.show();
+                showAlert(this, "Saved. \nNote: " + name + " usual lab is on " + weekday);
                 return;
+
             }
 
             //Check time of scan
@@ -114,32 +114,38 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             switch (status) {
                 case 0:
                     saveScan(netID,status,scanTime,scanDay,week);
-                    message = "Saved but absent. " + name + " is late.";
+                    message = "Saved but absent. \n" + name + " is late.";
                     break;
                 case 1:
                     saveScan(netID,status,scanTime,scanDay,week);
-                    message = "Saved. " + name + " scanned for week " + week + " " + weekday + " " + labTime + " at " + scanTime;
+                    message = "Saved. \n" + name + " scanned for week " + week + " " + weekday + " " + labTime + " at " + scanTime;
                     break;
                 case 2:
                     saveScan(netID,0,scanTime,scanDay,week);
-                    message = "Saved but absent. " + name + " usual lab time is " + labTime + ". If attending with permission, please note down the student's name.";
+                    message = "Saved but absent. \n" + name + " usual lab time is " + labTime;
                     break;
                 default:
-                    message = "Invalid scan!";
+                    message = "Unable to scan. \nPlease record student's name.";
                     break;
             }
-            builder.setMessage(message);
-
-            //Check if student has already been scanned (check by week and student) - Dis[play if scanned
+            showAlert(this, message);
 
         }
 
+    }
 
-        //Show alert
+    public void showAlert(Context c, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        builder.setTitle("Scan Result");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                scannerView.resumeCameraPreview(ScanCode.this);
+            }
+        });
+        builder.setMessage(message);
         AlertDialog alert = builder.create();
         alert.show();
-
-
     }
 
 
@@ -172,7 +178,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             } else if(scan.after(labEarly) && scan.before(labLate)){
                 return 1; //Good
             } else {
-                return 3; //Attending different lab
+                return 2; //Attending different lab
             }
         } catch (ParseException e){
             return -1;

@@ -86,11 +86,11 @@ public class ExportAttendance extends AppCompatActivity {
                 CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
 
                 //Write header
-                String[] header = {"NetID", "Attendance", "Time of Scan", "Day of Week", "Week"};
+                String[] header = {"NetID", "Attendance", "Time of Scan", "Day of Week", "Week", "End-of-line"};
                 csvWrite.writeNext(header, false);
                 for(int i = 0; i < scanRecords.size(); i++){
                     Scan record = scanRecords.get(i);
-                    String res[] = {record.getNetID(), String.valueOf(record.getAttendance()), String.valueOf(record.getScanTime()), record.getScanDate(), String.valueOf(record.getWeek())};
+                    String res[] = {record.getNetID(), String.valueOf(record.getAttendance()), String.valueOf(record.getScanTime()), record.getScanDate(), String.valueOf(record.getWeek()), ";"};
                     csvWrite.writeNext(res, false);
                 }
                 csvWrite.close();
