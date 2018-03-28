@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity{
 
     public void scan(View view){
         Intent intent = new Intent(this, ScanCode.class);
-        //intent.putExtra("Permission", ContextCompat.checkSelfPermission(MainActivity.this, CAMERA));
         intent.putExtra("week", week);
         startActivity(intent);
     }
@@ -150,6 +149,7 @@ public class MainActivity extends AppCompatActivity{
         startActivity(Intent.createChooser(intent, "Send Email"));
         */
 
+        /*
         //Write to csv - external storage
         String state = Environment.getExternalStorageState();
         if(Environment.MEDIA_MOUNTED.equals(state)){
@@ -213,10 +213,13 @@ public class MainActivity extends AppCompatActivity{
         */
             //startActivity(Intent.createChooser(intent, "Send Email"));
 
+        /*
         }else{
             Toast.makeText(this, "No external storage", Toast.LENGTH_SHORT).show();
         }
-
+        */
+        Intent intent = new Intent(this, ExportAttendance.class);
+        startActivity(intent);
 
     }
 }

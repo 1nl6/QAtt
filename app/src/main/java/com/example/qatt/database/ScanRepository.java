@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import de.greenrobot.dao.query.QueryBuilder;
 import greendao.Scan;
 import greendao.ScanDao;
 
@@ -39,5 +40,19 @@ public class ScanRepository {
         return ((DaoApplication) c.getApplicationContext()).getDaoSession().getScanDao();
     }
 
-    //
+    //Get all scans of specific week
+    public static List<Scan> getWeekScan(Context c, int week){
+        List <Scan> scans = getScanDao(c).queryBuilder()
+                .where(ScanDao.Properties.Week.eq(week))
+                .list();
+        return scans;
+    }
+
+    //Find if a student has already been scanned before
+    public static boolean studentScanned(Context c, String netID, int week){
+        List <Scan> scans = getScanDao(c).queryBuilder()
+                .where(ScanDao.Properties.Week.eq(week), ScanDao.Properties.NetID.eq(netID))
+                .list();
+        return scans.size() > 0;
+    }
 }
