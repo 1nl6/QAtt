@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.qatt.database.StudentRepository;
+import com.example.qatt.database.ScanRepository;
 import com.google.zxing.Result;
 
 import java.text.ParseException;
@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import greendao.Student;
+import greendao.Scan;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static android.Manifest.permission.CAMERA;
@@ -93,9 +93,6 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             String weekday = lines[3];
             String labTime = lines[4];
 
-            //Get student object
-            //Student student = findStudent(netID, name);
-
             //Check if date and time is valid
             SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE");
             Date d = new Date();
@@ -115,13 +112,16 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             String message;
             switch (status) {
                 case 0:
-                    message = "Saved. " + name + " scanned for week " + week + " " + weekday + " " + labTime + " at " + scanTime;
+                    saveScan(netID,status,scanTime,scanDay,week);
+                    message = "Saved but absent. " + name + " is late.";
                     break;
                 case 1:
-                    message = "Early scan. Not saved.";
+                    saveScan(netID,status,scanTime,scanDay,week);
+                    message = "Saved. " + name + " scanned for week " + week + " " + weekday + " " + labTime + " at " + scanTime;
                     break;
                 case 2:
-                    message = "Saved. " + name + " late and marked absent.";
+                    saveScan(netID,status,scanTime,scanDay,week);
+                    message = "Saved but absent. " + name + " usual lab time is " + labTime + ". If attending with permission, please note down the name.";
                     break;
                 default:
                     message = "Invalid scan!";
@@ -130,10 +130,6 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             builder.setMessage(message);
 
             //Check if student has already been scanned (check by week and student) - Dis[play if scanned
-
-            //Add attendance to database
-
-
 
         }
 
@@ -144,6 +140,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
 
     }
 
+    /*
     //Check if student exist in database (create new student if not) - return student
     public Student findStudent(String netID, String name){
         Student student = StudentRepository.getStudent(this, netID);
@@ -159,6 +156,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
         return student;
 
     }
+    */
 
     //Check time of scan
     public int checkTime(String labTime, String scanTime){
@@ -181,16 +179,24 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             Date labLate = cal.getTime();
 
             if(scan.after(labEarly) && scan.before(labLate)){
-                return 0; //Good
+                return 1; //Good
             } else if(scan.before(labEarly)){
-                return 1; //Early, not saved
+                return 2; //Early, not saved
             } else{
-                return 2; //Late, saved but absent
+                return 0; //Late, saved but absent
             }
         } catch (ParseException e){
             return -1;
         }
+    }
 
-
+    public void saveScan(String netID, int status, String scanTime, String scanDate, int week){
+        Scan s = new Scan();
+        s.setNetID(netID);
+        s.setAttendance(status);
+        s.setScanTime(scanTime);
+        s.setScanDate(scanDate);
+        s.setWeek(week);
+        ScanRepository.insertOrUpdate(this, s);
     }
 }

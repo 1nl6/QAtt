@@ -24,8 +24,6 @@ public class DaoApplication extends Application {
 
         daoMaster.dropAllTables(db,true);
         daoMaster.createAllTables(db, true);
-        addStudent();
-        addScan();
     }
 
     public DaoSession getDaoSession(){

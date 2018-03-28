@@ -187,12 +187,12 @@ public class MainActivity extends AppCompatActivity{
                 Log.e("Child", e.getMessage(), e);
             }
 
+            /*
             //Send email
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"1nl6@queensu.ca"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Backup");
             intent.putExtra(Intent.EXTRA_TEXT, "Fail");
-            //intent.setType("*/*");
 
             intent.setType("application/octet-stream");
             if (!file.exists() || !file.canRead()) {
@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity{
             Uri uri = Uri.parse("content://" + file);
             //Uri uri = Uri.fromFile(file);
             intent.putExtra(Intent.EXTRA_STREAM, uri);
+            */
         /*
         File root = Environment.getExternalStorageDirectory();
         String fileName = "attendance-db";
@@ -212,7 +213,7 @@ public class MainActivity extends AppCompatActivity{
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(attachment));
         }
         */
-            startActivity(Intent.createChooser(intent, "Send Email"));
+            //startActivity(Intent.createChooser(intent, "Send Email"));
 
         }else{
             Toast.makeText(this, "No external storage", Toast.LENGTH_SHORT).show();
