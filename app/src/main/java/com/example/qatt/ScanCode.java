@@ -103,7 +103,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
             //Student scanned for different day
             if(!scanDay.equals(weekday)){
                 saveScan(netID,0,scanTime,scanDay,week);
-                showAlert(this, "Saved. \nNote: " + name + " usual lab is on " + weekday);
+                showAlert(this, "Saved but absent. \n" + name + " usual lab is on " + weekday + " at " + labTime);
                 return;
 
             }
@@ -122,7 +122,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                     break;
                 case 2:
                     saveScan(netID,0,scanTime,scanDay,week);
-                    message = "Saved but absent. \n" + name + " usual lab time is " + labTime;
+                    message = "Saved but absent. \n" + name + " usual lab is on " + weekday + " at " + labTime;
                     break;
                 default:
                     message = "Unable to scan. \nPlease record student's name.";

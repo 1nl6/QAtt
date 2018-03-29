@@ -59,8 +59,13 @@ public class ExportAttendance extends AppCompatActivity {
     public void exportAll(View view){
         String filename = "attendance-master.csv";
         List<Scan> scanRecords= ScanRepository.getAllScans(this);
-        saveCSV(scanRecords,filename);
-        Toast.makeText(this, "All attendance exported to csv", Toast.LENGTH_SHORT).show();
+        if(scanRecords.size() == 0){
+            Toast.makeText(this, "No attendances have been saved yet.", Toast.LENGTH_SHORT).show();
+        } else{
+            saveCSV(scanRecords,filename);
+            Toast.makeText(this, "All attendance exported to csv", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public void saveCSV(List<Scan> scanRecords, String filename){
