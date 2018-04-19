@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context="com.example.qatt.ExportAttendance">
 
+    <TextView
+        android:id="@+id/exportPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="20dp"
+        android:padding="10dp"/>
+
+    <!--
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,11 +57,61 @@
 
     </LinearLayout>
 
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:text="EXPORT ALL WEEKS"
         android:onClick="exportAll"/>
+
+        -->
+
+    <RelativeLayout
+        android:id="@+id/exportPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/exportWeekText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:textSize="20dp"
+            android:text="Export week"/>
+
+        <NumberPicker
+            android:id="@+id/exportWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/exportWeekText"
+            >
+
+        </NumberPicker>
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="BACKUP"
+        android:onClick="backup"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="BACKUP AND EMAIL"
+        android:onClick="email"/>
 
 </RelativeLayout>
