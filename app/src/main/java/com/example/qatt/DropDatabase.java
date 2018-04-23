@@ -7,10 +7,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.qatt.database.DaoApplication;
 import com.example.qatt.database.ScanRepository;
+
+import java.util.Random;
 
 import greendao.DaoMaster;
 import greendao.DaoSession;
@@ -18,10 +22,47 @@ import greendao.ScanDao;
 
 public class DropDatabase extends AppCompatActivity {
 
+    private static final String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+    public static final int CONFIRMATION_LENGTH = 6;
+    String confirmString;
+    EditText confirmInput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drop_database);
+        setup();
+    }
+
+    public void setup(){
+        //Generate random string for confirmation
+        confirmString = random();
+        TextView confirmText = findViewById(R.id.confirmText);
+        confirmText.setText(confirmString);
+
+        //EditTExt
+        confirmInput = (EditText) findViewById(R.id.confirmInput);
+
+    }
+
+
+    public static String random() {
+        Random random=new Random();
+        StringBuilder sb=new StringBuilder(CONFIRMATION_LENGTH);
+        for(int i=0;i<CONFIRMATION_LENGTH;++i)
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        return sb.toString();
+        /*
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = 5;
+        char tempChar;
+        for (int i = 0; i < randomLength; i++){
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
+        */
     }
 
     public void cancelDropping(View view){
@@ -30,21 +71,28 @@ public class DropDatabase extends AppCompatActivity {
     }
 
     public void drop(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("You'll lose all you scan records!")
-                .setTitle("Drop attendance database?");
-        builder.setPositiveButton("Drop", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dropDB();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        if(confirmInput.getText().toString().equals(confirmString)){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("You'll lose all you scan records!")
+                    .setTitle("Drop attendance database?");
+            builder.setPositiveButton("Drop", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dropDB();
+
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else{
+            Toast.makeText(this,"Input did not match.", Toast.LENGTH_SHORT).show();
+            setup();
+        }
+
 
     }
 

@@ -21,14 +21,17 @@
         android:gravity="center"
         android:layout_centerInParent="true">
         <TextView
+            android:id="@+id/confirmText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/textview_border"
             android:padding="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:layout_margin="5dp"
-            android:textSize="30dp"
-            android:text="asdfdsa"/>
+            android:textSize="30dp"/>
         <EditText
+            android:id="@+id/confirmInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
