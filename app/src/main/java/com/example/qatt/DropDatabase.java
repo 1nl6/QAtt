@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,17 @@ public class DropDatabase extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drop_database);
         setup();
+
+        confirmInput.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    matchStrings();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     public void setup(){
@@ -42,6 +55,7 @@ public class DropDatabase extends AppCompatActivity {
 
         //EditTExt
         confirmInput = (EditText) findViewById(R.id.confirmInput);
+        confirmInput.setText("");
 
     }
 
@@ -52,18 +66,8 @@ public class DropDatabase extends AppCompatActivity {
         for(int i=0;i<CONFIRMATION_LENGTH;++i)
             sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
         return sb.toString();
-        /*
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = 5;
-        char tempChar;
-        for (int i = 0; i < randomLength; i++){
-            tempChar = (char) (generator.nextInt(96) + 32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
-        */
     }
+
 
     public void cancelDropping(View view){
         Intent intent = new Intent(this, MainActivity.class);
@@ -71,6 +75,10 @@ public class DropDatabase extends AppCompatActivity {
     }
 
     public void drop(View view){
+        matchStrings();
+    }
+
+    public void matchStrings(){
         if(confirmInput.getText().toString().equals(confirmString)){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("You'll lose all you scan records!")
@@ -92,8 +100,6 @@ public class DropDatabase extends AppCompatActivity {
             Toast.makeText(this,"Input did not match.", Toast.LENGTH_SHORT).show();
             setup();
         }
-
-
     }
 
     public void dropDB(){

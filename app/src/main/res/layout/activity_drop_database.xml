@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="Enter Text"
+            android:singleLine="true"
             android:padding="5dp"
             android:background="@drawable/rounded_border"/>
     </LinearLayout>
