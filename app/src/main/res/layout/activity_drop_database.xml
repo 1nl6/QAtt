@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:padding="10dp"
-        android:text="You are about to erase the entire database"/>
+        android:textSize="20dp"
+        android:text="Caution! You are about to erase the entire database!"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
