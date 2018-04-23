@@ -28,7 +28,8 @@
         </activity>
         <activity android:name=".ScanCode" />
         <activity android:name=".ExportAttendance" />
-        <activity android:name=".Test"></activity>
+        <activity android:name=".Test" />
+        <activity android:name=".DropDatabase"></activity>
     </application>
 
 </manifest>

@@ -12,6 +12,12 @@
         android:text="EXPORT"
         android:layout_alignParentRight="true"
         android:onClick="exportDB"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DROP"
+        android:layout_alignParentLeft="true"
+        android:onClick="dropDB"/>
 
     <TextView
         android:layout_width="wrap_content"

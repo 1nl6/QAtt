@@ -115,6 +115,11 @@ public class MainActivity extends AppCompatActivity{
         confirmWeek(this);
     }
 
+    public void dropDB(View view){
+        Intent intent = new Intent(this, DropDatabase.class);
+        startActivity(intent);
+    }
+
     public void exportDB(View view){
         Intent intent = new Intent(this, ExportAttendance.class);
         startActivity(intent);
